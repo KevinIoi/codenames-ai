@@ -1,0 +1,4 @@
+Use tfidf similarity measures?
+- load tfidf table
+
+

@@ -1,32 +1,13 @@
-# Prerequisites
-*.d
+# development folders
+resources/
+**data/
 
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
+# python / jupyter ignore files
+__pycache__/
+.ipynb_checkpoints
 
-# Precompiled Headers
-*.gch
-*.pch
-
-# Compiled Dynamic libraries
+# cpp ignore files
 *.so
 *.dylib
 *.dll
-
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
-
-# Executables
-*.exe
 *.out
-*.app

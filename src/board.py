@@ -1,3 +1,7 @@
+'''
+    The Game Board object for codenames
+'''
+
 from exceptions import InvalidBoardException, InvalidGuessException
 from math import floor
 
@@ -8,10 +12,12 @@ RESETC = "\033[m"
 
 class Board(object):
     
-    def __init__(self, game_words,targets, bombs):
+    def __init__(self, game_words, p1_targets, p1_bombs, p2_targets, p2_bombs):
         self.setGameWords(game_words)
-        self.setTargets(targets)    
-        self.setBombs(bombs)
+        self.setTargets(p1_targets, 1)
+        self.setTargets(p2_targets, 2)    
+        self.setBombs(p1_bombs, 1)
+        self.setBombs(p1_bombs, 2)
         self.guessedWords = []
         
     def setGameWords(self, words):
@@ -23,52 +29,135 @@ class Board(object):
             raise InvalidBoardException(f"Duplicate game words on board\n {words}")
         self.words = words
             
-    def setTargets(self, targets):
+    def setTargets(self, targets, player):
         ''' setter for target words '''
         if len(set(targets)) != len(targets):# make sure no duplicate words
             raise InvalidBoardException(f"Duplicate words in target set\n {targets}")
-        self.targets = targets
+        if player==1:
+            self.p1_targets = targets
+        elif player==2:
+            self.p2_targets = targets
+        else:
+            raise InvalidPlayerException(f"Invalid player given target words <{player}>.\n MUST be \{1,2\}")
     
-    def setBombs(self, bombs):
+    
+    def setBombs(self, bombs, player):
         ''' setter for bomb words '''
         if len(set(bombs)) != len(bombs):# make sure no duplicate words
             raise InvalidBoardException(f"Duplicate words in bomb set\n {bombs}")
-        if any(word in bombs for word in self.targets):
-            raise InvalidBoardException(f"Overlapping target and bomb sets\n{self.targets}\n{self.bombs}") 
-        self.bombs = bombs
-        
-    def addGuess(self, guess):
+
+        if player == 1:
+            if any(word in bombs for word in self.p1_targets):
+                raise InvalidBoardException(f"Overlapping target and bomb sets\n{self.p1_targets}\n{bombs}") 
+            self.p1_bombs = bombs
+        elif player == 2:
+            if any(word in bombs for word in self.p2_targets):
+                raise InvalidBoardException(f"Overlapping target and bomb sets\n{self.p2_targets}\n{bombs}") 
+            self.p2_bombs = bombs
+        else:
+            raise InvalidPlayerException(f"Invalid player given bomb words <{player}>.\n MUST be \{1,2\}")
+    
+    def addGuess(self, guess, player):
+        ''' adds a list of words to the guessed words'''
         if guess not in self.getGameWords():
             raise InvalidGuessException("Guessed word is not on the board")
-        if guess in self.getGuessWords():
+        if guess in self.getGuessedWords():
             raise InvalidGuessException("Guessed word has already been guessed")
-        self.guessedWords.append(guess)
+
+        if player == 1:
+            self.p1_guessedWords.extend(guess)
+        elif player == 2:
+            self.p2_guessedWords.extend(guess)
     
-    def getTargets(self, remaining=False):
-        ''' getter for target words'''
-        if remaining:# only return words that have not been cleared already
-            idx = [word not in self.getGuessedWords for word in self.targets]
-            return self.targets[idx]
+    def getTargets(self, player, active=False):
+        ''' getter for target words
+
+            params:
+                player (int):
+                    the player who's targets to retrieve
+                active (bool):
+                    if only the words that have not been guessed should be retrieved
+        '''
+
+        if player == 1:
+            if active:# only return words that have not been cleared already
+                activeWords = list(set(self.p1_targets)-set(self.getGuessedWords()))
+                return activeWords
+            else:
+                return self.p1_targets
+        if player == 2:
+            if active:# only return words that have not been cleared already
+                activeWords = list(set(self.p2_targets)-set(self.getGuessedWords()))
+                return activeWords
+            else:
+                return self.p2_targets
         else:
-            return self.targets
-    
-    def getBombs(self):
-        ''' getter for bomb words'''        
-        return self.bombs
+            raise InvalidPlayerException("Invalid player chosen. MUST be MUST be \{1,2\}")
+
+    def getBombs(self, player):
+        ''' getter for bomb words'''
+         if player == 1:
+            return self.p1_bombs
+        if player == 2:
+            return self.p2_bombs
+        else:
+            raise InvalidPlayerException("Invalid player chosen. MUST be MUST be \{1,2\}")
     
     def getGameWords(self, active=False):
         ''' getter for current words on board'''
         if active:
-            return [word for word in self.words if word not in self.getGuessedWords()]
+            return list(set(self.words)-set(self.getGuessedWords()))
         else:
             return self.words
     
-    def getGuessedWords(self):
-        ''' getter for all guessed words'''
-        return self.guessedWords
-    
+    def getGuessedWords(self, player=None):
+        ''' getter for guessed words, will return all guessed words unless a player
+            is specified
+            
+            params:
+                player (int):
+                    the player who's guessed words should be retrieved
+        '''
+        if player == 1:
+            return self.p1_guessedWords
+        elif player == 2:
+            return self.p2_guessedWords
+        else:
+            return self.p1_guessedWords + self.p2_guessedWords
+
+    def validateBoard(self):
+        ''' evaluates board to see if game has ended due to bad guess or complete board
+
+            returns:
+                gameState (int):
+                    Reflects the current state of the game
+                        1 -> Valid game, both players have targets remaining  
+                        2 -> Valid game, only p1 has targets remaining
+                        3 -> Valid game, only p2 has targets remaining
+                        4 -> Completed game, p1 bomb word guessed
+                        5 -> Completed game, p2 bomb word guessed
+                        6 -> Completed game, all targets have been guessed
+        '''
+
+        if any(word in self.getGuessedWords(1) for word in self.p1_bombs):
+            return 4
+        if any(word in self.getGuessedWords(2) for word in self.p2_bombs):
+            return 5
+        if len(getTargets(1, activeWords=True) + getTargets(2, activeWords=True)) == 0:
+            return 6
+        if len(getTargets(1, activeWords=True))==0 & len(getTargets(2, activeWords=True))==0:
+            return 1
+        if len(getTargets(1, activeWords=True))!=0:
+            return 2
+        if len(getTargets(2, activeWords=True))!=0:
+            return 3
+        else:
+            raise Exception("Whaa!?")
+
     def __str__(self):
-        ''' converts current gameboard to string format '''
+        ''' Converts current gameboard to string format 
+            Defaults to printing player 1's board 
+        '''
         out = ''
         rowSize = int(len(self.words)**(0.5))
         for rowIdx in range(0, rowSize):
@@ -81,9 +170,9 @@ class Board(object):
                     writeWord = word
                 
                 # colourize word based on word set
-                if word in self.getTargets():
+                if word in self.getTargets(1):
                     c = TGREEN
-                elif word in self.bombs:
+                elif word in self.getBombs(1):
                     c = TRED
                 else:
                     c = RESETC

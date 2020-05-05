@@ -5,21 +5,27 @@ class GameMaster(object):
     
     def __init__(self, *args):
         print("Preparing Game...")
-        self.ai = ComputerPlayer()
+        self._ai = ComputerPlayer()
         self.setNewGame()
 
     def setNewGame(self):
         ''' sets board '''
-        self.game = Game()
+        self._game = Game()
     
     def submitClue(self,clue_word, target_count):
         ''' sends clue to ai to predict associated target_words '''
-        guesses = self.ai.evaluateClue(self.game.getCompBoard(), clue_word, target_count)
-        print(guesses)
+        guesses = self._ai.evaluateClue(self._game.getCompBoard(), clue_word, target_count)
         
+
+        return guesses
+      
     def getClue():
         ''' pulls clue from ai for current target words '''
         pass
     
+    def checkGameOver(self):
+        ''' checks if game state reflects a completed game'''
+        return False
+
     def drawBoard(self,player=0):
-        return self.game.getStrBoard(player)
+        return self._game.getStrBoard(player)

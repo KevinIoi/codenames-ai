@@ -1,28 +1,66 @@
 from gamemaster import GameMaster
 
-def getIntInput(retrymessage = "Enter a valid number"):
+def main():
+	gm = GameMaster()
+
+	while not gm.checkGameOver():
+		print(gm.drawBoard())
+
+		print(f"Enter a clue (single word:")
+		word = getStrInput("Please enter a single word", lambda x: len(x.split()) == 1)
+		word = word.strip()
+
+		print(f"How many words does this clue apply to?")
+		count = getIntInput()
+
+		gm.submitClue(word, count)
+
+def getIntInput(retrymessage = "Enter a valid whole number", vailditiyCheck = lambda x:True):
+	''' gets command line int input 
+
+		params:
+			retrymessage (str): 
+				Message that will be printed out after each invalid input
+			vailditiyCheck (func):
+				Funciton used to check the validity of the input
+	'''
 	valid=False
+
 	while not valid:
 		num = input()
 		try:
 			num = int(num.strip())
-			valid=True
+			if vailditiyCheck(num):
+				valid=True
+			else:
+				valid=False
+				print(retrymessage)
 		except Exception as e:
 			valid = False
 			print(retrymessage)
 	return num
 
-def main():
-	gm = GameMaster()
-	print(gm.drawBoard())
 
-	print(f"Enter a clue (single word:")
-	word = input()
-	word = word.strip()
-	print(f"How many words does this clue apply to?")
-	count = getIntInput()
+def getStrInput(retrymessage = "Enter a valid string", vailditiyCheck = lambda x: True):
+	''' gets command line string input 
 
-	gm.submitClue(word, count)
+		params:
+			retrymessage (str): 
+				Message that will be printed out after each invalid input
+			vailditiyCheck (func):
+				Funciton used to check the validity of the input
+	'''
+	valid=False
+	while not valid:
+		strInput = input()
+		if vailditiyCheck(strInput):
+			valid=True
+		else:
+			valid=False
+			print(retrymessage)
+	
+	return strInput
+
 
 if __name__ == '__main__':
 	main()

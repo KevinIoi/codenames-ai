@@ -27,28 +27,37 @@ class ComputerPlayer(object):
 
         self.word_vecs = embeddings_index
     
-    def evaluateClue(self,current_board, clue_word, target_count):
-        ''' Processes a clue provided from other player'''
-        e_dist = []
-        c_dist = []
-
-        for word in current_board.getGameWords(active=True):
-            c_dist.append((cosine_dist(self.word_vecs[word], self.word_vecs[clue_word]), word))
-            e_dist.append((euc_dist(self.word_vecs[word], self.word_vecs[clue_word]), word))
-
-        e_dist =sorted(e_dist, key=lambda x: x[0])
-        c_dist =sorted(c_dist, key=lambda x: x[0], reverse=True)
-        
-        topWords = defaultdict(lambda: 0.0)
-        value = 1.0
-        for eword, cword in zip(e_dist[:target_count+2], c_dist[:target_count+2]):
-            topWords[eword] += value
-            topWords[cword] += value*0.75
-            value = max([0.2, value-0.2])
-        selected_guesses = sorted(topWords.items(), key=lambda x: x[1])[target_count]
-
-        return [guess[0] for guess in selected_guesses]
-        
     def produceClue(current_bouard):
         ''' Creates a clue based on current game board '''
         pass
+
+    def evaluateClue(self,current_board, clue_word, target_count):
+        ''' Processes a clue provided from other player'''
+        
+        ranked_words = self.rankWordAssociation(current_board.getGameWords(active=True), clue_word)
+
+        best_guesses = ranked_words[:target_count]
+
+        return [guess[0] for guess in best_guesses]
+
+    def rankWordAssociation(self, lexicon, target_word):
+        e_dist = []
+        c_dist = []
+
+        for word in lexicon:
+            c_dist.append((cosine_dist(self.word_vecs[word], self.word_vecs[target_word]), word))
+            e_dist.append((euc_dist(self.word_vecs[word], self.word_vecs[target_word]), word))
+
+        e_dist =sorted(e_dist, key=lambda x: x[0])
+        c_dist =sorted(c_dist, key=lambda x: x[0], reverse=True)
+
+        topWords = defaultdict(lambda: 0.0)
+        value = 1.0
+        for eword, cword in zip(e_dist, c_dist):
+            topWords[cword[1]] += value
+            topWords[eword[1]] += value*0.75
+            value = max([0.2, value-0.1])
+
+        ranked_similarity = sorted(topWords.items(), key=lambda x: x[1], reverse=True)
+
+        return ranked_similarity

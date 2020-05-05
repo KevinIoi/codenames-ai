@@ -22,13 +22,13 @@ class Game(object):
     def resetBoard(self):
         ''' reset gameboard '''
         gamewords = np.random.choice(self.gameword_lexicon, size=self.board_dim**2, replace=False)
-        player_target, player_bomb = self.getTargetBombWords(gamewords)
-        comp_target, comp_bomb = self.getTargetBombWords(gamewords)
+        player_target, player_bomb = self.createTargetBombWords(gamewords)
+        comp_target, comp_bomb = self.createTargetBombWords(gamewords)
         
-        self.player_board = Board(gamewords, player_target, player_bomb)
-        self.comp_board = Board(gamewords, comp_target, comp_bomb)
+        self._player_board = Board(gamewords, player_target, player_bomb)
+        self._comp_board = Board(gamewords, comp_target, comp_bomb)
     
-    def getTargetBombWords(self, gamewords):
+    def createTargetBombWords(self, gamewords):
         ''' Randomly select target and bomb words from currect game_word sellection'''
         target_words = np.random.choice(gamewords, size=self.target_count, replace=False)
         bomb_words = random.sample(set(gamewords).difference(set(target_words)), self.bomb_count)
@@ -41,14 +41,30 @@ class Game(object):
         return gameword_lexicon
 
     def getStrBoard(self, player):
+        ''' gets the board for a specifiv player
+
+            param:
+                player (int):
+                    0 for human player's board
+                    1 for ai player's board
+        '''
         if player == 0:
             return str(self.getPlayerBoard())
         elif player == 1:
             return str(self.getComBoard())
         else:
             raise InvalidBoardException(f"No Board Exists for player {player}")
+
+    def guessTargetWords(self, words, player=0):
+        self.getPlayerBoard(player).addGuess(words)
+        boardStatus = self.getPlayerBoard(player).validateBoard()
+
+
+
+        pass
+
     # Getters
     def getPlayerBoard(self):
-        return self.player_board
+        return self._player_board
     def getCompBoard(self):
-        return self.comp_board
+        return self._comp_board

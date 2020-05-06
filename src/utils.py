@@ -5,7 +5,10 @@ def strikeout(word):
     ''' Creates a strikethrough font in terminal '''
     newWord = []
     for char in word:
-        newWord.append("\u0336"+char)
+        if char.isalpha():
+            newWord.append(f"\u0336{char}")
+        else:
+            newWord.append(" ")
     return "".join(newWord)
 
 # Distance Funcs

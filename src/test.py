@@ -1,9 +1,11 @@
 from gamemaster import GameMaster
+import os
 
 def main():
 	gm = GameMaster()
 
-	while not gm.checkGameOver():
+	while gm.checkGameState() <= 3:
+		os.system('clear')
 		print(gm.drawBoard())
 
 		print(f"Enter a clue (single word:")
@@ -13,7 +15,7 @@ def main():
 		print(f"How many words does this clue apply to?")
 		count = getIntInput()
 
-		gm.submitClue(word, count)
+		gm.submitClue(word, count, 1)
 
 def getIntInput(retrymessage = "Enter a valid whole number", vailditiyCheck = lambda x:True):
 	''' gets command line int input 

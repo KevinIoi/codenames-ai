@@ -12,20 +12,23 @@ class GameMaster(object):
         ''' sets board '''
         self._game = Game()
     
-    def submitClue(self,clue_word, target_count):
+    def submitClue(self,clue_word, target_count, player):
         ''' sends clue to ai to predict associated target_words '''
-        guesses = self._ai.evaluateClue(self._game.getCompBoard(), clue_word, target_count)
-        
 
-        return guesses
-      
+        activeGameWords = self._game.gameboard.getGameWords(active=True)
+        guesses = self._ai.evaluateClue(activeGameWords, clue_word, target_count)
+        self._game.guessTargetWords(guesses, player=player)
+
     def getClue():
         ''' pulls clue from ai for current target words '''
-        pass
+        activeGameWords = self._game.gameboard.getGameWords(active=True)
+        guesses = self._ai.getClue(activeGameWords, target_words, bomb_words)
     
-    def checkGameOver(self):
-        ''' checks if game state reflects a completed game'''
-        return False
+    def checkGameState(self):
+        ''' evaluates the game state based off the current board '''
+        state = self._game.getGameState()
+        print(state)
+        return state 
 
-    def drawBoard(self,player=0):
+    def drawBoard(self,player=1):
         return self._game.getStrBoard(player)

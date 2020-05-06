@@ -20,13 +20,12 @@ class Game(object):
         self.bomb_count = bomb_count
     
     def resetBoard(self):
-        ''' reset gameboard '''
+        ''' creates new board instance '''
         gamewords = np.random.choice(self.gameword_lexicon, size=self.board_dim**2, replace=False)
         player_target, player_bomb = self.createTargetBombWords(gamewords)
         comp_target, comp_bomb = self.createTargetBombWords(gamewords)
         
-        self._player_board = Board(gamewords, player_target, player_bomb)
-        self._comp_board = Board(gamewords, comp_target, comp_bomb)
+        self.gameboard = Board(gamewords, player_target, player_bomb, comp_target, comp_bomb)
     
     def createTargetBombWords(self, gamewords):
         ''' Randomly select target and bomb words from currect game_word sellection'''
@@ -41,30 +40,25 @@ class Game(object):
         return gameword_lexicon
 
     def getStrBoard(self, player):
-        ''' gets the board for a specifiv player
+        ''' gets the board for a specific player
 
             param:
                 player (int):
-                    0 for human player's board
-                    1 for ai player's board
+                    1 for human player's board
+                    2 for ai player's board
         '''
-        if player == 0:
-            return str(self.getPlayerBoard())
-        elif player == 1:
-            return str(self.getComBoard())
-        else:
-            raise InvalidBoardException(f"No Board Exists for player {player}")
+        return str(self.gameboard.getBoardStr(player))
 
-    def guessTargetWords(self, words, player=0):
-        self.getPlayerBoard(player).addGuess(words)
-        boardStatus = self.getPlayerBoard(player).validateBoard()
+    def guessTargetWords(self, words, player):
+        ''' adds guessed words to the board 
 
+            params:
+                words (list, str):
+                    list of words that were guessed
+                player (int):
+                    denotes the player who's target words are being guessed (player who provided clue)
+        '''         
+        self.gameboard.addGuess(words, player)
 
-
-        pass
-
-    # Getters
-    def getPlayerBoard(self):
-        return self._player_board
-    def getCompBoard(self):
-        return self._comp_board
+    def getGameState(self):
+        return self.gameboard.validateBoard()

@@ -4,6 +4,7 @@
 
 from exceptions import InvalidBoardException, InvalidGuessException
 from math import floor
+from utils import strikeout
 
 TGREEN =  "\033[32m"
 TRED =  "\033[31m"
@@ -17,8 +18,9 @@ class Board(object):
         self.setTargets(p1_targets, 1)
         self.setTargets(p2_targets, 2)    
         self.setBombs(p1_bombs, 1)
-        self.setBombs(p1_bombs, 2)
-        self.guessedWords = []
+        self.setBombs(p2_bombs, 2)
+        self.p1_guessedWords = []
+        self.p2_guessedWords = []
         
     def setGameWords(self, words):
         ''' setter for full list of game words'''
@@ -38,7 +40,7 @@ class Board(object):
         elif player==2:
             self.p2_targets = targets
         else:
-            raise InvalidPlayerException(f"Invalid player given target words <{player}>.\n MUST be \{1,2\}")
+            raise InvalidPlayerException(f"Invalid player given target words <{player}>.\n MUST be 1 or 2")
     
     
     def setBombs(self, bombs, player):
@@ -55,14 +57,14 @@ class Board(object):
                 raise InvalidBoardException(f"Overlapping target and bomb sets\n{self.p2_targets}\n{bombs}") 
             self.p2_bombs = bombs
         else:
-            raise InvalidPlayerException(f"Invalid player given bomb words <{player}>.\n MUST be \{1,2\}")
+            raise InvalidPlayerException(f"Invalid player given bomb words <{player}>.\n MUST be 1 or 2")
     
     def addGuess(self, guess, player):
         ''' adds a list of words to the guessed words'''
-        if guess not in self.getGameWords():
-            raise InvalidGuessException("Guessed word is not on the board")
-        if guess in self.getGuessedWords():
-            raise InvalidGuessException("Guessed word has already been guessed")
+        # if guess not in self.getGameWords():
+        #     raise InvalidGuessException("Guessed word is not on the board")
+        # if guess in self.getGuessedWords():
+        #     raise InvalidGuessException("Guessed word has already been guessed")
 
         if player == 1:
             self.p1_guessedWords.extend(guess)
@@ -96,7 +98,7 @@ class Board(object):
 
     def getBombs(self, player):
         ''' getter for bomb words'''
-         if player == 1:
+        if player == 1:
             return self.p1_bombs
         if player == 2:
             return self.p2_bombs
@@ -143,18 +145,18 @@ class Board(object):
             return 4
         if any(word in self.getGuessedWords(2) for word in self.p2_bombs):
             return 5
-        if len(getTargets(1, activeWords=True) + getTargets(2, activeWords=True)) == 0:
+        if len(self.getTargets(1, active=True) + self.getTargets(2, active=True)) == 0:
             return 6
-        if len(getTargets(1, activeWords=True))==0 & len(getTargets(2, activeWords=True))==0:
+        if len(self.getTargets(1, active=True))==0 & len(self.getTargets(2, active=True))==0:
             return 1
-        if len(getTargets(1, activeWords=True))!=0:
+        if len(self.getTargets(1, active=True))!=0:
             return 2
-        if len(getTargets(2, activeWords=True))!=0:
+        if len(self.getTargets(2, active=True))!=0:
             return 3
         else:
             raise Exception("Whaa!?")
 
-    def __str__(self):
+    def getBoardStr(self, player=1):
         ''' Converts current gameboard to string format 
             Defaults to printing player 1's board 
         '''
@@ -162,21 +164,23 @@ class Board(object):
         rowSize = int(len(self.words)**(0.5))
         for rowIdx in range(0, rowSize):
             for word in self.getGameWords()[rowIdx*rowSize:rowIdx*rowSize+rowSize]:
-                
-                #create strikeout font if word has been guessed 
-                if word in self.getGuessedWords():
-                    writeWord = strikeout(word)
-                else:
-                    writeWord = word
-                
+                               
                 # colourize word based on word set
-                if word in self.getTargets(1):
+                if word in self.getTargets(player):
                     c = TGREEN
-                elif word in self.getBombs(1):
+                elif word in self.getBombs(player):
                     c = TRED
                 else:
                     c = RESETC
-                    
-                out = "".join([out,c,'{0:<15}'.format(writeWord)])
+                
+                #create strikeout font if word has been guessed 
+                if word in self.getGuessedWords():
+                    out = "".join([out,c,strikeout('{0:<15}'.format(word))])
+                else:
+                    out = "".join([out,c,'{0:<15}'.format(word)])
+
             out = "".join([out, RESETC,'\n'])
         return out
+
+    def __str__(self):
+        return self.getBoardStr()

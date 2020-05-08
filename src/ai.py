@@ -38,7 +38,7 @@ class ComputerPlayer(object):
 
         self.word_vecs = embeddings_index
     
-    def produceClue(current_board):
+    def produceClue(target_words, bomb_words):
         ''' Creates a clue based on current game board '''
 
 

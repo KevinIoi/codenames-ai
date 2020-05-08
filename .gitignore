@@ -1,6 +1,7 @@
 # development folders
 resources/
 **data/
+kevin/
 
 # python / jupyter ignore files
 __pycache__/

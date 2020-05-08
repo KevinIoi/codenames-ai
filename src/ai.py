@@ -41,8 +41,12 @@ class ComputerPlayer(object):
     def produceClue(target_words, bomb_words):
         ''' Creates a clue based on current game board '''
 
+        # compare all target_words to eachother
 
+        # save count of words that are a similiarity of >0.7? for each word 
 
+        # cluster possible clue words
+        # get optimal cluster of clue words based on that group?
 
 
 

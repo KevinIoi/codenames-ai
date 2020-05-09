@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+
+
 from gamemaster import GameMaster
 import os
 

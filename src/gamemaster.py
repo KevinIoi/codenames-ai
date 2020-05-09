@@ -19,10 +19,12 @@ class GameMaster(object):
         guesses = self._ai.evaluateClue(activeGameWords, clue_word, target_count)
         self._game.guessTargetWords(guesses, player=player)
 
-    def getClue():
+    def getClue(self):
         ''' pulls clue from ai for current target words '''
-        activeGameWords = self._game.gameboard.getGameWords(active=True)
-        guesses = self._ai.getClue(activeGameWords, target_words, bomb_words)
+        target_words = self._game.getTargetWords(player=2, active=True)
+        bomb_words = self._game.getBombWords(player=2)
+        guesses = self._ai.produceClue( target_words, bomb_words)
+        return guesses
     
     def checkGameState(self):
         ''' evaluates the game state based off the current board '''

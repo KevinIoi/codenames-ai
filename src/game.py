@@ -60,5 +60,11 @@ class Game(object):
         '''         
         self.gameboard.addGuess(words, player)
 
+    def getTargetWords(self, player, active=False):
+        return self.gameboard.getTargets(player, active=active)
+
+    def getBombWords(self, player):
+        return self.gameboard.getBombs(player)
+
     def getGameState(self):
         return self.gameboard.validateBoard()

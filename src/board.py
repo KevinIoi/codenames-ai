@@ -77,6 +77,7 @@ class Board(object):
             params:
                 player (int):
                     the player who's targets to retrieve
+                    MUST be 1 or 2
                 active (bool):
                     if only the words that have not been guessed should be retrieved
         '''

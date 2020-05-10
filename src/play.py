@@ -6,19 +6,44 @@ import os
 
 def main():
 	gm = GameMaster()
+	player_turn = 1
 
 	while gm.checkGameState() <= 3:
+
 		os.system('clear')
-		print(gm.drawBoard())
+		print(gm.drawBoard(player=1))
 
-		print(f"Enter a clue (single word:")
-		word = getStrInput("Please enter a single word", lambda x: len(x.split()) == 1)
-		word = word.strip()
+		if player_turn ==1:
+			print("It is your turn to give a clue")
+			print(f"Enter a clue (single word:")
+			word = getStrInput("Please enter a single word", lambda x: len(x.split()) == 1)
+			word = word.strip()
 
-		print(f"How many words does this clue apply to?")
-		count = getIntInput()
+			print(f"How many words does this clue apply to?")
+			count = getIntInput()
 
-		gm.submitClue(word, count, 1)
+			guesses = gm.submitClue(word, count, 1)
+
+			print(f"The computer has guessed: {" ".join(guesses)}")
+			print("Press enter to contine...")
+			input()
+			player_turn = 2
+		else:
+			print("It is the computer's turn to give a clue")
+			clue, target_count = gm.getClue()
+			print("The clue is: {}".format(clue))
+			if target_count >1:
+				print("It is directed at {} target words".format(target_count))
+			else:
+				print("It is directed at {} target word".format(target_count))
+
+			guess_count = 0
+			while guess_count < target_count:
+				print("please enter a target word to guess")
+				guess = getStrInput()
+
+			player_turn = 1
+
 
 def getIntInput(retrymessage = "Enter a valid whole number", vailditiyCheck = lambda x:True):
 	''' gets command line int input 

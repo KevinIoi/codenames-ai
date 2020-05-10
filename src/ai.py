@@ -5,7 +5,7 @@ import pickle
 from tqdm import tqdm
 from collections import defaultdict
 import clustering
-
+import logging
 
 DATAPATH = "../resources/"
 
@@ -45,8 +45,16 @@ class ComputerPlayer(object):
             and unrelated to bomb_words
 
             params:
-
-        '''
+                target_words (list, str):
+                    words to target 
+                bomb_words (list, str):
+                    words to avoid
+            returns:
+                clue_word (str):
+                    the generated clue word
+                num_targets (int):
+                    the number of target words which the clue pertains to
+        ''' 
 
         generalized_target_vector, best_target_words = \
             self.getOptimalWordCluster(target_words, bomb_words)
@@ -55,9 +63,11 @@ class ComputerPlayer(object):
         clue_words = self.rankWordAssociation(list(self.word_vecs.keys()), \
                                             generalized_target_vector, ignore=target_words)
 
+        while len(clue_words[0][0]) < 3:
+            del clue_words[0]
+
         num_targets = len(best_target_words)
 
-        print(best_target_words)
         return clue_words[0][0], num_targets
 
     def getOptimalWordCluster(self, target_words, bomb_words):
@@ -84,7 +94,7 @@ class ComputerPlayer(object):
         embeddings = self.getWordEmbeddings(full_word_set)
 
         potential_groups = []
-        num_groups = 2
+        num_groups = max(int(len(target_words)/2), 1)
 
         # keep clustering until found a group of similar words without bomb_words
         # increase number of clusters after each failed iteration
@@ -93,6 +103,7 @@ class ComputerPlayer(object):
             grouper.fit(embeddings)
             cluster_labels = np.array(grouper.train_labels)
 
+            #verify if any potential clusters were created
             for cluster in np.unique(cluster_labels):
                 cluster_indices = cluster_labels==cluster
                 current_cluster_words = full_word_set[cluster_indices]
@@ -104,7 +115,7 @@ class ComputerPlayer(object):
             num_groups+=1
 
         # sort potential_groups by number of group members
-        potential_groups = sorted(potential_groups, key=lambda x: len(x[1]))        
+        potential_groups = sorted(potential_groups, key=lambda x: len(x[1]), reverse=True)        
 
         return potential_groups[0]
 

@@ -24,12 +24,13 @@ def main():
 
 			guesses = gm.submitClue(word, count, 1)
 
-			print(f"The computer has guessed: {" ".join(guesses)}")
+			print("The computer has guessed: {}".format(" ".join(guesses)))
 			print("Press enter to contine...")
 			input()
 			player_turn = 2
 		else:
 			print("It is the computer's turn to give a clue")
+			print("Please wait while it thinks...")
 			clue, target_count = gm.getClue()
 			print("The clue is: {}".format(clue))
 			if target_count >1:
@@ -43,6 +44,8 @@ def main():
 				guess = getStrInput()
 
 			player_turn = 1
+
+	
 
 
 def getIntInput(retrymessage = "Enter a valid whole number", vailditiyCheck = lambda x:True):

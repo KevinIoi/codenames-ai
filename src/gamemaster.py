@@ -17,7 +17,7 @@ class GameMaster(object):
 
         activeGameWords = self._game.gameboard.getGameWords(active=True)
         guesses = self._ai.evaluateClue(activeGameWords, clue_word, target_count)
-        self.submitGuess(guess, player=player)
+        self.submitGuess(guesses, player=player)
         return guesses
 
     def getClue(self):
@@ -33,7 +33,7 @@ class GameMaster(object):
         print(state)
         return state 
 
-    def submitGuess(self, guess, player):
+    def submitGuess(self, guesses, player):
         self._game.guessTargetWords(guesses, player=player)
 
     def drawBoard(self,player=1):

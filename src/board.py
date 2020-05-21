@@ -70,6 +70,12 @@ class Board(object):
             self.p1_guessedWords.extend(guess)
         elif player == 2:
             self.p2_guessedWords.extend(guess)
+            if guess[0] in self.p2_bombs:
+                return "Bomb"
+            elif guess[0] in self.p2_targets:
+                return "Target"
+            else:
+                return "Normal"
     
     def getTargets(self, player, active=False):
         ''' getter for target words

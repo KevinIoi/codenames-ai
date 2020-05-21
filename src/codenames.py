@@ -22,7 +22,7 @@ def main():
 			print(f"How many words does this clue apply to?")
 			count = getIntInput()
 
-			guesses = gm.submitClue(word, count, 1)
+			guesses = gm.submitClue(word, count, player=1)
 
 			print("The computer has guessed: {}".format(" ".join(guesses)))
 			print("Press enter to contine...")
@@ -40,9 +40,13 @@ def main():
 
 			guess_count = 0
 			while guess_count < target_count:
+				guess_count+=1
 				print("please enter a target word to guess")
 				guess = getStrInput()
-
+				result = gm.submitGuess([guess], player=2)
+				print("You guessed a {} word".format(result))
+			print("Press enter to contine...")
+			input()
 			player_turn = 1
 
 	

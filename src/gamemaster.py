@@ -34,7 +34,7 @@ class GameMaster(object):
         return state 
 
     def submitGuess(self, guesses, player):
-        self._game.guessTargetWords(guesses, player=player)
+        return self._game.guessTargetWords(guesses, player=player)
 
     def drawBoard(self,player=1):
         return self._game.getStrBoard(player)

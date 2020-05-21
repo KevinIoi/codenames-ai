@@ -26,8 +26,8 @@ class kmeans(object):
 
         # copy and normalize data
         X = np.array(copy.deepcopy(X))
-        X = np.subtract(X,np.min(X, axis=0, keepdims=True))
-        X = np.divide(X, np.subtract(np.max(X, axis=0, keepdims=True),np.min(X, axis=0, keepdims=True)))
+        # X = np.subtract(X,np.min(X, axis=0, keepdims=True))
+        # X = np.divide(X, np.subtract(np.max(X, axis=0, keepdims=True),np.min(X, axis=0, keepdims=True)))
 
         # init centriod positions to random instance
         centroids = X[np.random.choice(len(X), self.centroid_count, replace=False)]

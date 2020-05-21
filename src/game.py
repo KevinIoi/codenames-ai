@@ -57,8 +57,13 @@ class Game(object):
                     list of words that were guessed
                 player (int):
                     denotes the player who's target words are being guessed (player who provided clue)
+
+            return:
+                result (str):
+                    the classificaiton of word that was guessed {target,bomb,other}
         '''         
-        self.gameboard.addGuess(words, player)
+        result = self.gameboard.addGuess(words, player)
+        return result
 
     def getTargetWords(self, player, active=False):
         return self.gameboard.getTargets(player, active=active)

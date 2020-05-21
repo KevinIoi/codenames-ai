@@ -110,10 +110,9 @@ class ComputerPlayer(object):
 
                 if len(current_cluster_words)>0 and \
                     not any([word in bomb_words for word in current_cluster_words]):
-                    potential_groups.append((grouper.centroids[cluster],current_cluster_words))
+                    potential_groups.append([grouper.centroids[cluster],current_cluster_words])
 
             num_groups+=1
-
         # sort potential_groups by number of group members
         potential_groups = sorted(potential_groups, key=lambda x: len(x[1]), reverse=True)        
 

@@ -2,7 +2,6 @@
     The Game Board object for codenames
 '''
 
-from exceptions import InvalidBoardException, InvalidGuessException
 from math import floor
 from utils import strikeout
 
@@ -26,45 +25,45 @@ class Board(object):
         ''' setter for full list of game words'''
         set_size = len(words)
         if (set_size**0.5 - floor(set_size**0.5)) != 0:# round about way to verify square gridsize
-            raise InvalidBoardException(f"Game words can not be fit into square grid\n {words}") 
+            raise ValueError(f"Game words can not be fit into square grid\n {words}") 
         if len(set(words)) != len(words):# make sure no duplicate words
-            raise InvalidBoardException(f"Duplicate game words on board\n {words}")
+            raise ValueError(f"Duplicate game words on board\n {words}")
         self.words = words
             
     def setTargets(self, targets, player):
         ''' setter for target words '''
         if len(set(targets)) != len(targets):# make sure no duplicate words
-            raise InvalidBoardException(f"Duplicate words in target set\n {targets}")
+            raise ValueError(f"Duplicate words in target set\n {targets}")
         if player==1:
             self.p1_targets = targets
         elif player==2:
             self.p2_targets = targets
         else:
-            raise InvalidPlayerException(f"Invalid player given target words <{player}>.\n MUST be 1 or 2")
+            raise ValueError(f"Invalid player given target words <{player}>.\n MUST be 1 or 2")
     
     
     def setBombs(self, bombs, player):
         ''' setter for bomb words '''
         if len(set(bombs)) != len(bombs):# make sure no duplicate words
-            raise InvalidBoardException(f"Duplicate words in bomb set\n {bombs}")
+            raise ValueError(f"Duplicate words in bomb set\n {bombs}")
 
         if player == 1:
             if any(word in bombs for word in self.p1_targets):
-                raise InvalidBoardException(f"Overlapping target and bomb sets\n{self.p1_targets}\n{bombs}") 
+                raise ValueError(f"Overlapping target and bomb sets\n{self.p1_targets}\n{bombs}") 
             self.p1_bombs = bombs
         elif player == 2:
             if any(word in bombs for word in self.p2_targets):
-                raise InvalidBoardException(f"Overlapping target and bomb sets\n{self.p2_targets}\n{bombs}") 
+                raise ValueError(f"Overlapping target and bomb sets\n{self.p2_targets}\n{bombs}") 
             self.p2_bombs = bombs
         else:
-            raise InvalidPlayerException(f"Invalid player given bomb words <{player}>.\n MUST be 1 or 2")
+            raise ValueError(f"Invalid player given bomb words <{player}>.\n MUST be 1 or 2")
     
     def addGuess(self, guess, player):
         ''' adds a list of words to the guessed words'''
         # if guess not in self.getGameWords():
-        #     raise InvalidGuessException("Guessed word is not on the board")
+        #     raise ValueError("Guessed word is not on the board")
         # if guess in self.getGuessedWords():
-        #     raise InvalidGuessException("Guessed word has already been guessed")
+        #     raise ValueError("Guessed word has already been guessed")
 
         if player == 1:
             self.p1_guessedWords.extend(guess)
@@ -101,7 +100,7 @@ class Board(object):
             else:
                 return self.p2_targets
         else:
-            raise InvalidPlayerException("Invalid player chosen. MUST be MUST be \{1,2\}")
+            raise ValueError("Invalid player chosen. MUST be MUST be \{1,2\}")
 
     def getBombs(self, player):
         ''' getter for bomb words'''
@@ -110,7 +109,7 @@ class Board(object):
         if player == 2:
             return self.p2_bombs
         else:
-            raise InvalidPlayerException("Invalid player chosen. MUST be MUST be \{1,2\}")
+            raise ValueError("Invalid player chosen. MUST be MUST be \{1,2\}")
     
     def getGameWords(self, active=False):
         ''' getter for current words on board'''

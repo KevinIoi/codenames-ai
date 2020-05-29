@@ -36,7 +36,7 @@ class ComputerPlayer(object):
             with open(f"{DATAPATH}word_vecs.pickle","wb") as fp:
                 pickle.dump(embeddings_index, fp)
         else:
-            raise Exception(f"No word embeddings found in {DATAPATH}")
+            raise FileNotFoundError(f"No word embeddings found in {DATAPATH}")
 
         self.word_vecs = embeddings_index
     
